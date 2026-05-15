@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Trusted post-install scripts. These each need a native binary / WASM step:
+# - @biomejs/biome: platform-specific lint binary
+# - esbuild: platform-specific binary
+# - sharp: libvips bindings used by Next.js Image
+allowBuilds:
+  "@biomejs/biome": true
+  esbuild: true
+  sharp: true

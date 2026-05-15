@@ -1,0 +1,130 @@
+/* ==========================================================================
+   AxisQuant — Design Tokens
+   Dark-first color system. Light mode mirrors with adjusted lightness.
+   Reference: Anthropic typographic restraint, Mistral monochrome with accent.
+   ========================================================================== */
+
+:root {
+  /* ---------- Color: Dark mode (default) ---------- */
+  --aq-bg: #0a0a0b;
+  --aq-bg-elevated: #0f0f12;
+  --aq-surface: #111114;
+  --aq-surface-2: #16161a;
+  --aq-surface-3: #1c1c22;
+  --aq-border: #26262d;
+  --aq-border-strong: #36363f;
+
+  --aq-text: #ededee;
+  --aq-text-muted: #9b9ba3;
+  --aq-text-subtle: #6b6b73;
+  --aq-text-inverse: #0a0a0b;
+
+  /* Brand accents */
+  --aq-axis: #7c5cff;            /* primary violet */
+  --aq-axis-hover: #8e72ff;
+  --aq-axis-soft: #2a1e5c;       /* low-chroma fill for backgrounds */
+  --aq-axis-glow: rgba(124, 92, 255, 0.18);
+
+  --aq-signal: #5ee6a8;          /* positive deltas, success */
+  --aq-signal-soft: #0f3a26;
+  --aq-warn: #ffb84d;
+  --aq-danger: #ff5c5c;
+
+  /* Functional */
+  --aq-focus-ring: var(--aq-axis);
+  --aq-selection-bg: rgba(124, 92, 255, 0.35);
+  --aq-selection-fg: #ffffff;
+
+  /* ---------- Typography ---------- */
+  --aq-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --aq-font-display: "Fraunces", "Source Serif 4", ui-serif, Georgia, serif;
+  --aq-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Type scale (rem-based, 1.25 ratio) */
+  --aq-text-xs: 0.75rem;     /* 12 */
+  --aq-text-sm: 0.875rem;    /* 14 */
+  --aq-text-base: 1rem;      /* 16 */
+  --aq-text-lg: 1.125rem;    /* 18 */
+  --aq-text-xl: 1.25rem;     /* 20 */
+  --aq-text-2xl: 1.5rem;     /* 24 */
+  --aq-text-3xl: 1.875rem;   /* 30 */
+  --aq-text-4xl: 2.25rem;    /* 36 */
+  --aq-text-5xl: 3rem;       /* 48 */
+  --aq-text-6xl: 3.75rem;    /* 60 */
+  --aq-text-7xl: 4.5rem;     /* 72 */
+
+  --aq-leading-tight: 1.15;
+  --aq-leading-snug: 1.3;
+  --aq-leading-normal: 1.55;
+  --aq-leading-relaxed: 1.75;
+
+  --aq-tracking-tight: -0.02em;
+  --aq-tracking-normal: 0;
+  --aq-tracking-wide: 0.04em;
+
+  /* ---------- Spacing & radius ---------- */
+  --aq-radius-sm: 4px;
+  --aq-radius: 8px;
+  --aq-radius-md: 10px;
+  --aq-radius-lg: 14px;
+  --aq-radius-xl: 20px;
+  --aq-radius-full: 9999px;
+
+  /* ---------- Shadow ---------- */
+  --aq-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --aq-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --aq-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --aq-shadow-glow: 0 0 24px var(--aq-axis-glow);
+
+  /* ---------- Layout ---------- */
+  --aq-container-max: 1280px;
+  --aq-prose-max: 720px;
+  --aq-header-h: 64px;
+
+  /* ---------- Motion ---------- */
+  --aq-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --aq-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --aq-dur-fast: 120ms;
+  --aq-dur: 200ms;
+  --aq-dur-slow: 320ms;
+}
+
+/* ---------- Light mode override ---------- */
+:root[data-theme="light"],
+:root.light {
+  --aq-bg: #fafafa;
+  --aq-bg-elevated: #ffffff;
+  --aq-surface: #ffffff;
+  --aq-surface-2: #f4f4f6;
+  --aq-surface-3: #ebebef;
+  --aq-border: #e2e2e8;
+  --aq-border-strong: #cdcdd5;
+
+  --aq-text: #0a0a0b;
+  --aq-text-muted: #5b5b63;
+  --aq-text-subtle: #8a8a93;
+  --aq-text-inverse: #ffffff;
+
+  --aq-axis: #6747e8;
+  --aq-axis-hover: #5a3edb;
+  --aq-axis-soft: #ece7ff;
+  --aq-axis-glow: rgba(103, 71, 232, 0.12);
+
+  --aq-signal: #1f9d6a;
+  --aq-signal-soft: #d6f3e3;
+  --aq-warn: #b86d00;
+  --aq-danger: #d83a3a;
+
+  --aq-shadow-sm: 0 1px 2px rgba(10, 10, 11, 0.06);
+  --aq-shadow: 0 4px 12px rgba(10, 10, 11, 0.08), 0 1px 2px rgba(10, 10, 11, 0.05);
+  --aq-shadow-lg: 0 12px 32px rgba(10, 10, 11, 0.1), 0 2px 6px rgba(10, 10, 11, 0.06);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --aq-dur-fast: 0ms;
+    --aq-dur: 0ms;
+    --aq-dur-slow: 0ms;
+  }
+}

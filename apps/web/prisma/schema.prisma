@@ -1,0 +1,280 @@
+// AxisQuant — Database schema
+// Source of truth for both Next.js (Prisma client) and FastAPI (reads via SQLAlchemy
+// after introspection). Migrations are owned by Prisma in apps/web.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================================
+// Auth — NextAuth v5 / Auth.js Prisma adapter (admin-only)
+// =====================================================================
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id           String   @id @default(cuid())
+  githubLogin  String?  @unique
+  email        String?  @unique
+  name         String?
+  image        String?
+  role         Role     @default(EDITOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  featuredModels    FeaturedModel[]
+  featuredDatasets  FeaturedDataset[]
+  auditLogs         AuditLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// =====================================================================
+// People — team profiles, editable from admin without git push
+// =====================================================================
+
+model Person {
+  id           String   @id @default(cuid())
+  handle       String   @unique
+  name         String
+  title        String
+  bio          String   @db.Text
+  photoUrl     String?
+  links        Json     @default("{}") // { github, hf, scholar, twitter, site }
+  focusAreas   String[]
+  orderIndex   Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([orderIndex])
+  @@index([isActive])
+}
+
+// =====================================================================
+// Featured pinning — curated highlights of the lab's HF artifacts
+// =====================================================================
+
+model FeaturedModel {
+  id         String   @id @default(cuid())
+  hfId       String   @unique // e.g. "AxisQuant/llama-3.1-8b-int4-gptq"
+  orderIndex Int      @default(0)
+  note       String?  @db.Text
+  addedById  String?
+  addedAt    DateTime @default(now())
+
+  addedBy User? @relation(fields: [addedById], references: [id], onDelete: SetNull)
+
+  @@index([orderIndex])
+}
+
+model FeaturedDataset {
+  id         String   @id @default(cuid())
+  hfId       String   @unique
+  orderIndex Int      @default(0)
+  note       String?  @db.Text
+  addedById  String?
+  addedAt    DateTime @default(now())
+
+  addedBy User? @relation(fields: [addedById], references: [id], onDelete: SetNull)
+
+  @@index([orderIndex])
+}
+
+// =====================================================================
+// Benchmarks — perplexity, throughput, VRAM, accuracy retention, latency
+// =====================================================================
+
+enum BenchmarkMetric {
+  PERPLEXITY
+  THROUGHPUT_TOK_PER_SEC
+  VRAM_GB
+  TIME_TO_FIRST_TOKEN_MS
+  INTER_TOKEN_LATENCY_MS
+  MMLU
+  HELLASWAG
+  GSM8K
+  ARC
+  TRUTHFULQA
+  WINOGRANDE
+}
+
+enum QuantMethod {
+  GPTQ
+  AWQ
+  GGUF
+  EXL2
+  BNB_NF4
+  BNB_INT8
+  FP8
+  NONE
+}
+
+model BenchmarkRun {
+  id           String           @id @default(cuid())
+  modelHfId    String           // e.g. "AxisQuant/llama-3.1-8b-int4-gptq"
+  baseModel    String           // e.g. "meta-llama/Llama-3.1-8B"
+  quantMethod  QuantMethod
+  bits         Int?             // 4, 8, 16
+  hardware     String           // "A100-80GB", "H100", "RTX-4090", "M2-Max"
+  metric       BenchmarkMetric
+  value        Float
+  unit         String?          // free-form; e.g. "tok/s", "ms", "GB"
+  sourceUrl    String?
+  notes        String?          @db.Text
+  runAt        DateTime
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([quantMethod, hardware])
+  @@index([modelHfId])
+  @@index([metric])
+}
+
+// =====================================================================
+// Publications — index mirroring MDX research/blog posts for filtering & search
+// Built at deploy from frontmatter; admin can mark as featured.
+// =====================================================================
+
+enum PublicationKind {
+  RESEARCH
+  BLOG
+}
+
+model Publication {
+  id           String          @id @default(cuid())
+  kind         PublicationKind
+  slug         String          @unique
+  title        String
+  abstract     String?         @db.Text
+  mdxPath      String          // relative to apps/web/content
+  authors      Json            // [{ handle, name }]
+  topics       String[]
+  publishedAt  DateTime
+  updatedAt    DateTime        @updatedAt
+  featured     Boolean         @default(false)
+  draft        Boolean         @default(false)
+
+  @@index([kind, publishedAt(sort: Desc)])
+  @@index([featured])
+}
+
+// =====================================================================
+// Contact — partnership, hiring, general inquiries
+// =====================================================================
+
+enum ContactKind {
+  PARTNERSHIP
+  HIRING
+  GENERAL
+}
+
+enum ContactStatus {
+  NEW
+  IN_REVIEW
+  REPLIED
+  ARCHIVED
+}
+
+model ContactSubmission {
+  id             String        @id @default(cuid())
+  kind           ContactKind
+  name           String
+  email          String
+  org            String?
+  message        String        @db.Text
+  status         ContactStatus @default(NEW)
+  internalNotes  String?       @db.Text
+  ipHash         String?
+  userAgent      String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([kind])
+}
+
+// =====================================================================
+// Job runs — observability for APScheduler tasks
+// =====================================================================
+
+enum JobStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model JobRun {
+  id             String    @id @default(cuid())
+  name           String
+  status         JobStatus
+  startedAt      DateTime  @default(now())
+  finishedAt     DateTime?
+  errorText      String?   @db.Text
+  recordsTouched Int?
+
+  @@index([name, startedAt(sort: Desc)])
+}
+
+// =====================================================================
+// Audit log — admin actions
+// =====================================================================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  target    String
+  diff      Json?
+  at        DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([at(sort: Desc)])
+  @@index([actorId])
+}
