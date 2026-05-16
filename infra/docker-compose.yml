@@ -1,43 +1,19 @@
-# Local development infra for AxisQuant.
-# Run from repo root:  docker compose -f infra/docker-compose.yml up -d
-#
-# - Postgres 16 on :5432  (db: axisquant, user/pass: axisquant)
-# - Redis 7 on :6379
-
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: axisquant-postgres
+  mongodb:
+    image: mongo:7
+    container_name: axisquant-mongo
     restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
     environment:
-      POSTGRES_DB: axisquant
-      POSTGRES_USER: axisquant
-      POSTGRES_PASSWORD: axisquant
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      MONGO_INITDB_DATABASE: axisquant
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U axisquant -d axisquant"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  redis:
-    image: redis:7-alpine
-    container_name: axisquant-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: ["redis-server", "--appendonly", "yes"]
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  postgres_data:
-  redis_data:
+  mongo_data:

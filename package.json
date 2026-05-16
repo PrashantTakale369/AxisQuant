@@ -1,26 +1,16 @@
 {
   "name": "axisquant",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "AxisQuant — AI research lab for model quantization, optimization, and efficient deployment",
-  "packageManager": "pnpm@11.1.2",
-  "engines": {
-    "node": ">=20.10.0",
-    "pnpm": ">=9.0.0"
-  },
+  "description": "AxisQuant — MERN stack full-stack website",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
-    "clean": "turbo run clean && rm -rf node_modules .turbo"
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"yellow,cyan\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix server && npm run build --prefix client",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "turbo": "2.3.3",
-    "typescript": "5.7.3"
+    "concurrently": "^9.1.2"
   }
 }

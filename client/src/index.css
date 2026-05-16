@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body { background: #0a0a0b; color: #ededee; font-family: 'Inter', sans-serif; min-height: 100vh; }
+  ::selection { background: rgba(124,92,255,0.35); color: #fff; }
+  :focus-visible { outline: 2px solid #7c5cff; outline-offset: 2px; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #26262d; border: 3px solid #0a0a0b; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #36363f; }
+  h1,h2,h3,h4,h5,h6 { letter-spacing: -0.02em; line-height: 1.15; }
+  code,pre,kbd { font-family: 'JetBrains Mono', monospace; }
+}
+
+@layer components {
+  .aq-container { @apply mx-auto w-full max-w-site px-5 md:px-8; }
+  .aq-prose { @apply max-w-prose mx-auto leading-relaxed; }
+  .aq-prose h2 { @apply text-3xl font-semibold mt-10 mb-4; }
+  .aq-prose h3 { @apply text-2xl font-semibold mt-8 mb-3; }
+  .aq-prose p { @apply my-4; }
+  .aq-prose a { @apply text-axis underline underline-offset-2; }
+  .aq-prose code:not(pre code) { @apply bg-s2 px-1.5 py-0.5 rounded text-sm border border-border; }
+  .aq-prose pre { @apply bg-surface border border-border rounded-lg p-4 overflow-x-auto text-sm leading-relaxed my-6; }
+  .aq-prose blockquote { @apply border-l-2 border-axis pl-4 text-muted italic; }
+  .aq-grid-bg {
+    background-image: linear-gradient(to right, #26262d 1px, transparent 1px),
+                      linear-gradient(to bottom, #26262d 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+  }
+  .tag { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border; }
+  .tag-axis { @apply tag border-axis/30 bg-axis/10 text-axis; }
+  .tag-default { @apply tag border-border bg-s2 text-muted; }
+  .tag-signal { @apply tag border-signal/30 bg-signal/10 text-signal; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-axis focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:pointer-events-none; }
+  .btn-primary { @apply btn bg-axis text-white hover:bg-axis-hover px-5 py-2.5 text-sm; }
+  .btn-secondary { @apply btn bg-s2 text-text border border-border hover:bg-s3 hover:border-border-strong px-5 py-2.5 text-sm; }
+  .btn-ghost { @apply btn bg-transparent text-muted hover:text-text hover:bg-s2 px-4 py-2 text-sm; }
+  .btn-outline { @apply btn bg-transparent text-text border border-border hover:bg-s2 px-5 py-2.5 text-sm; }
+  .card { @apply bg-surface border border-border rounded-xl p-6 transition-colors hover:border-border-strong; }
+  .input { @apply w-full bg-s2 border border-border rounded-lg px-4 py-2.5 text-text placeholder:text-subtle focus:outline-none focus:border-axis focus:ring-1 focus:ring-axis text-sm transition-colors; }
+  .label { @apply block text-sm font-medium text-muted mb-1.5; }
+}
